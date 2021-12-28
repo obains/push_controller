@@ -17,10 +17,25 @@ public class MainActivity extends AppCompatActivity {
     private String requestMethod;
     private String requestEndpoint;
     private TextView responseMessage;
+    private void returnSuccessMessage(String button_name) {
+        int responseCode = 200; // fix
+        if (responseCode == 200) {
+                if (button_name == "sendMessageRain") {
+                    responseMessage.setText("OK");
+                } else if (button_name == "sendMessageStatus") {
+                    responseMessage.setText("RUNNING");
+                }
+                responseMessage.setTextColor(getResources().getColor(R.color.success));
+            } else {
+                responseMessage.setText("FAILURE");
+                responseMessage.setTextColor(getResources().getColor(R.color.failure));
+            }
+            responseMessage.setVisibility(View.VISIBLE);
+            responseMessage.postDelayed(() -> responseMessage.setVisibility(View.INVISIBLE), 3000);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        int responseCode = 200;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -31,16 +46,7 @@ public class MainActivity extends AppCompatActivity {
             responseMessage = (TextView)findViewById(R.id.responseMessage);
             MyTask MyTask = new MyTask();
             MyTask.execute();
-            System.out.println(responseCode); // problem; this is always 0
-            if (responseCode == 200) {
-                responseMessage.setText("OK");
-                responseMessage.setTextColor(getResources().getColor(R.color.success));
-            } else {
-                responseMessage.setText("FAILURE");
-                responseMessage.setTextColor(getResources().getColor(R.color.failure));
-            }
-            responseMessage.setVisibility(View.VISIBLE);
-            responseMessage.postDelayed(() -> responseMessage.setVisibility(View.INVISIBLE), 3000);
+            returnSuccessMessage("sendMessageRain");
 
         });
 
@@ -51,21 +57,17 @@ public class MainActivity extends AppCompatActivity {
             responseMessage = (TextView)findViewById(R.id.responseMessage);
             MyTask MyTask = new MyTask();
             MyTask.execute();
-            responseMessage.setText("RUNNING");
-            responseMessage.setTextColor(getResources().getColor(R.color.success));
-            responseMessage.setVisibility(View.VISIBLE);
-            responseMessage.postDelayed(() -> responseMessage.setVisibility(View.INVISIBLE), 3000);
+            returnSuccessMessage("sendMessageStatus");
         });
-
-
     }
 
     private class MyTask extends AsyncTask<Void, Void, Void> {
 
+        private int responseCode;
+
         @Override
         protected Void doInBackground(Void... voids) {
             URL piEndpoint;
-            int responseCode = 0;
 
             {
                 try {
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return null;
         }
+
     }
 
 }
