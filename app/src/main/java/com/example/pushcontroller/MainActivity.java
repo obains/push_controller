@@ -1,10 +1,10 @@
 package com.example.pushcontroller;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 import java.net.*;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -40,18 +40,23 @@ public class MainActivity extends AppCompatActivity {
                 responseMessage.setTextColor(getResources().getColor(R.color.failure));
             }
             responseMessage.setVisibility(View.VISIBLE);
+            responseMessage.postDelayed(() -> responseMessage.setVisibility(View.INVISIBLE), 3000);
+
         });
 
         final Button sendMessageStatus = (Button) findViewById(R.id.button_status);
         sendMessageStatus.setOnClickListener(v -> {
             requestMethod = "GET";
             requestEndpoint = "/";
+            responseMessage = (TextView)findViewById(R.id.responseMessage);
             MyTask MyTask = new MyTask();
             MyTask.execute();
             responseMessage.setText("RUNNING");
             responseMessage.setTextColor(getResources().getColor(R.color.success));
             responseMessage.setVisibility(View.VISIBLE);
+            responseMessage.postDelayed(() -> responseMessage.setVisibility(View.INVISIBLE), 3000);
         });
+
 
     }
 
@@ -60,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             URL piEndpoint;
-            int responseCode;
+            int responseCode = 0;
 
             {
                 try {
@@ -97,9 +102,6 @@ public class MainActivity extends AppCompatActivity {
                         String failureMessage = myConnection.getResponseMessage();
                         System.out.println(failureCode);
                         System.out.println(failureMessage);
-                        //responseMessage.setText("ERROR:" + failureMessage);
-                        //responseMessage.setTextColor(ContextCompat.getColor(context, R.color.failure));
-                        //responseMessage.setVisibility(View.VISIBLE);
 
                     }
                 } catch (IOException e) {
